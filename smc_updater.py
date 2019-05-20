@@ -39,15 +39,6 @@ def check_pid(pid):
     else:
         return True
 
-""" Check if user running script is root or sudo"""
-def is_root_user():
-	root_user = (os.getuid() == 0 and True or False)
-	if not root_user:
-		print("#### PLEASE RUN SCRIPT AS ROOT OR SUDO #### ")
-		exit()
-	else:
-		return True
-
 """ Test if the system is using UEFI or BIOS"""
 """ Some BIOS updates are seperated by these types"""
 def is_uefi_boot():
@@ -255,9 +246,6 @@ if __name__ == "__main__":
 	options = Options()
 	options.headless = True
 
-	# Set screen resolution to 1366 x 768 like most 15" laptops
-#	display = Display(visible=0, size=(640, 480))
-#	display.start()
 	driver = webdriver.Firefox(options=options)
 	#File created with "for i in `curl -s https://www.supermicro.com/products/motherboard/| grep quaternaryNavItem|awk -F ' ' {'print $2'}| sed 's/href=\"//'|sed 's/\"//'|grep -v 'Global_SKU'`; do curl -s https://www.supermicro.com/${i} | grep prodLink| awk -F '<a href="' {'print $2'}| awk -F 'class=' {'print $1'}|sed 's/\"//'|grep -v Global_SKU >> smc_board_links.txt;done"
 	with open("smc_board_links.txt") as f:
