@@ -1,0 +1,4 @@
+2019-05-15_13:48:23    root    ./sum -c GetCurrentBiosCfg
+2019-05-15_13:52:44    root    ./sum -c editDMIinfo
+2019-05-15_13:53:11    root    ./sum -c ChangeBmcCfg
+2019-05-15_13:53:16    root    ./sum -c GetBmcCfg

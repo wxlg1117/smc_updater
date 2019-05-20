@@ -1,0 +1,16 @@
+# Please copy this file to SUM execution directory or user home directory and rename to .sumrc
+# The SUM execution directory will be read first, and the user's home directory will be the second priority
+# Please remove "#" to activate a customized configuration
+
+
+# set SUM journal level
+# 0: silent, 1: fatal, 2: error, 3: warning, 4: information, 5: debug, 6: verbose
+#journal_level = 0
+
+# set SUM journal path 
+# the following is an example path
+#journal_path = /home/administrator/journal/supermicro/test
+
+# set confirm flag polling timeout
+# the unit is second
+#confirm_timeout = 300

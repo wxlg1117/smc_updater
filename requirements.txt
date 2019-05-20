@@ -1,0 +1,4 @@
+delegator.py
+selenium>=3.141.0
+cli_ui
+pyvirtualdisplay

@@ -1,0 +1,268 @@
+-------------------------------------------------------------------------------
+Supermicro IPMICFG Release Notes
+Copyright(c) 2018 by Super Micro Computer, Inc.          http://supermicro.com/
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Introduction
+-------------------------------------------------------------------------------
+IPMICFG is a command line tool that let user set IPMI command through keyboard
+controller style (KCS) to the device that support Intelligent Platform
+Management Interface (IPMI) version 2.0 specifications.
+
+-------------------------------------------------------------------------------
+Requirements
+-------------------------------------------------------------------------------
+ - Operating system:
+    * Microsoft DOS 5.0 or later version
+    * Windows Server 2003, 2008, 2012 (32/64bit), 2016
+         - Operating system must be pre-installed Microsoft Visual C++ 2008 SP1
+           Redistributable Package
+           Download Link:
+               http://www.microsoft.com/en-us/download/details.aspx?id=29
+         - Windows 2008 R2 x64 must be pre-installed KB3033929 patch
+           Download Link:
+               https://www.microsoft.com/en-us/download/details.aspx?id=46083
+      Windows 7/8/8.1/10:
+         - Need disabled UAC(User Account Control) or open a command prompt
+           with a run as administrator.
+         - Windows 7 x64 must be pre-installed KB3033929 patch
+           Download Link:
+               https://www.microsoft.com/en-us/download/details.aspx?id=46148
+    * Linux Kernel version 2.6.x or higher.
+      ex: Red Hat Enterprise Linux (RHEL) 6.8 and 7.2,
+          SUSE Linux Enterprise Server (SLES) 11 SP4 and 12 SP1
+          Ubuntu Server 14.04 LTS and 16.04 LTS
+    * Free Disk Space: 200 MB (Linux, Windows)
+    * Available RAM: 64 MB
+ - Hardware:
+    * Baseboard Management Controller (BMC) must support Intelligent Platform
+      Management Interface (IPMI) version 2.0 specifications.
+ - Software:
+    * -tas, -nvme commands must be installed Thin-Agent Service. The TAS
+      minimum required version is 1.4.0.
+
+-------------------------------------------------------------------------------
+Installation and Upgrade Instructions
+-------------------------------------------------------------------------------
+ - DOS
+   Execute IPMICFG.exe
+ - Windows
+   Execute IMPICFG-Win.exe
+ - Linux
+   If your system has installed OpenIPMI driver, you can enabled Linux IPMI
+   driver:
+        # /etc/init.d/ipmi start
+        or
+        # modprobe ipmi_msghandler
+        # modprobe ipmi_devintf
+        # modprobe ipmi_si
+   Then execute IPMICFG-Linux.x86 or IPMICFG-Linux.x86_64
+   
+-------------------------------------------------------------------------------
+Third Party Software
+-------------------------------------------------------------------------------
+ - Phymem
+   Please refer to
+   http://www.codeproject.com/Articles/35378/Access-Physical-Memory-Port-and-PC
+   I-Configuration for more information.
+ - IPMITool
+   Please refer to
+   http://sourceforge.net/projects/ipmitool for more information.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.29.0 build 181029
+-------------------------------------------------------------------------------
+1. To modify IPMICFG to support MicroCloud SYS-5039MD8-H8TNR 8 nodes  with
+   ConfigID = 8.
+2. Support NVMe backplane to expand to a group of 24 slots.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.28.0 build 180302
+-------------------------------------------------------------------------------
+1.  Add IPv6 setting functions.
+2.  Support BBP2 (BBP + PSU) module.
+3.  Support Purley MRC error code.
+4.  Fix known issues.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.27.1 build 170901
+-------------------------------------------------------------------------------
+1.  Fix PMInfo command can't open DAT file issue in DOS edition.
+2.  Fix can't execute some commands in H11 platform.
+3.  Add warning message when remove NVME device.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.27.0 build 170620
+-------------------------------------------------------------------------------
+1.  Add DCMI commands.
+2.  Add MCU ID support for 0xA5, 0xA6, 0xA7 and 0xA8 on IPMICFG with the "tp"
+    command.
+3.  Disabled Microblade "VBAT" sensor all the upper threshold value.
+4.  Fix getting PMBus's detail status has duplicate information.
+5.  Update NM commands to Node Manager 4.0.
+6.  Support ATEN 8U Superblade firmware.
+7.  Update board ID.
+8.  Update KCS driver.
+9.  Modify PMBus Revision info.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.26.0 build 161123
+-------------------------------------------------------------------------------
+1.  Support MultiNode config ID = 6 and 12.
+2.  Support MultiNode MCU ID = 0xA7.
+3.  Support TAS 1.4.0.
+4.  Update event log description in SEL command.
+5.  Presenting power module full status information in -pminfo command.
+6.  Improve NVME firmware information in "-nvme info" command.
+7.  Support the watchdog sensor in "-sdr" command.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.25.0 build 160823
+-------------------------------------------------------------------------------
+1.  Support discrete sensor.
+2.  Support NVME 48 nodes.
+3.  Update FRU chassis type.
+4.  Update board id.
+5.  Modify parameter list format.
+6.  Fix FRU fields too many characters lead to FRU wrong issue.
+7.  Add Get/Set host name command.
+8.  Update Windows KCS driver.
+9.  Fix can't boot from UEFI device issue.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.24.2 build 160517
+-------------------------------------------------------------------------------
+1.  Fix power reading is incorrect with command nm oem power.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.24.1 build 160222
+-------------------------------------------------------------------------------
+1.  Update Windows KCS driver.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.24.0 build 160105
+-------------------------------------------------------------------------------
+1.  Add TAS commands. (Not supported DOS)
+2.  Update NVME commands. (Not supported DOS)
+3.  Add summary command.
+4.  Update board id.
+5.  Update MRC Code for SEL.
+6.  Update SEL description.
+7.  Fix MCU Version value wrong issue.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.23.0 build 151106
+-------------------------------------------------------------------------------
+1.  Support MicroCloud device in tp commands.
+2.  Fix temperature sensor reading can't display negative issue.
+3.  Fix TJmax value wrong issue.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.22.0 build 150814
+-------------------------------------------------------------------------------
+1.  Update board id.
+2.  Update GUID.
+3.  When impicfg failed, error message will store to stderr variable.
+4.  When input wrong parameter, ipmicfg will print all the parameters
+    explaination and cancel pause screen mechanism. (Not supported DOS)
+5.  When use not root permission account to launch ipmicfg, ipmicfg will show
+    tip message.
+6.  Fix -sdr hang issue at SuperBlade.
+
+-------------------------------------------------------------------------------
+ IPMICFG 1.21.0 build 150615
+-------------------------------------------------------------------------------
+1.  Add BIOS MRC Code for SEL.
+2.  Add support power consumption sensor(SDR record type = 0x0b).
+3.  Add SDR Type 2 to support PS Status Compact SDR.
+4.  Update Fan mode.
+5.  Udpate SEL description and board id.
+6.  Modify FatTwin Right side node ID.
+7.  Modify TwinPro commands.
+8.  Replace KCS driver.
+9.  Update length of PWS Module Number from 12 bytes to 13 bytes.
+10. Fix memory ECC error description.
+
+-------------------------------------------------------------------------------
+Known Issues, Limitations & Restrictions
+-------------------------------------------------------------------------------
+1. 'Destination IP address' in the first entry under alerts subsection is
+   volatile as per the IPMI spec. So, this field will not be saved if restored
+   to factory defaults.
+
+2. Some parameters need IPMI OEM commands support. If not, the execute result
+   will response error message or information. The parameters include:
+  -fd                   Reset to the factory default.
+                        option: -d | Detected IPMI device for BMC reset.
+  -fdl                  Reset to the factory default. (Clean LAN)
+                        option: -d | Detected IPMI device for BMC reset.
+  -fde                  Reset to the factory default. (Clean FRU & LAN)
+                        option: -d | Detected IPMI device for BMC reset.
+  -nm nmsdr             Display NM SDR.
+  -nm seltime           Get SEL time.
+  -nm deviceid          Get ME Device ID.
+  -nm reset             Reboots ME.
+  -nm reset2default     Force ME reset to Default.
+  -nm updatemode        Force ME to Update Mode.
+  -nm selftest          Get Self Test Results.
+  -nm listimagesinfo    List ME Images information.
+  -nm oemgetpower       OEM Power command for ME.
+  -nm oemgettemp        OEM Temp. command for ME.
+  -nm pstate            Get Max allowed CPU P-State.
+  -nm tstate            Get Max allowed CPU T-State.
+  -nm cpumemtemp        Get CPU/Memory temperature.
+  -nm hostcpudata       Get host CPU data.
+  -fan                  Get Fan Mode.
+  -fan <mode>                       Set Fan Mode.
+  -pminfo                           Power supply PMBus health.
+  -psfruinfo                        Power supply FRU health.
+  -psbbpinfo                        Battery backup power status.
+  -autodischarge <module> <day>     Set auto discharge by days.
+  -discharge <module>               Manually discharge battery.
+  -conf upload <file> <option>      Upload IPMI configuration form binary file.
+                                    option: -p | Bypass warning message.
+  -conf download <file>             Download IPMI configuration to binary file.
+  -conf tupload <file> <option>     Upload IPMI configuration from text file.
+                                    option: -p | Bypass warning message.
+  -conf tdownload <file>            Download IPMI configuration to text file.
+  -clrint                           Clear chassis intrusion.
+  -reset <index>                    Reset System and force to boot from device.
+  -soft <index>                     Initiate a soft-shutdown for OS and force
+                                    to boot from device.
+  -recoverbiosinfo                  Get recovery BIOS information.
+  -reset <index>                    Reset System and force to boot from device.
+  -soft <index>                     Initiate a soft-shutdown for OS and force
+                                    to boot from device.
+  -recoverbiosinfo                  Get recovery BIOS information.
+  -nvme list                        Display the existing NVME SSD list.
+  -nvme info                        NVME SSD information.
+  -nvme rescan                      Rescan all devices by in band.
+  -nvme insert <aoc> <group> <slot> Insert SSD by out of band.
+  -nvme locate <HDD Name>           Locate SSD. (in band)
+  -nvme locate <aoc> <group> <slot> Locate SSD. (out of band)
+  -nvme stoplocate <HDD Name>           Stop Locate SSD. (in band)
+  -nvme stoplocate <aoc> <group> <slot> Stop Locate SSD. (out of band)
+  -nvme remove <HDD Name> [option]  Remove NVME device. (in band)
+        Usage: option 0: Do eject after remove (Default).
+               option 1: Do not eject after remove.
+  -nvme remove <aoc> <group> <slot> Remove NVME device. (out of band)
+  -nvme smartdata [HDD Name]        NVME SMART data.
+  -tp info                          Get MCU Info.
+  -tp info <type>                   Get MCU Type Info. (type: 1 - 3)
+  -tp nodeid                        Get Node ID.
+  -tas info                         Get TAS Information.
+  -tas pause                        Pause TAS Service.
+  -tas resume                       Resume TAS Service.
+  -tas refresh                      Trigger TAS to recollect data.
+  -tas clear                        Clear TAS collected data in BMC.
+  -tas period <sec>                 Set TAS update period <limit 5 to 60 sec>.
+  -tas exec <cmd>                   Execute a user's specified command.
+
+-------------------------------------------------------------------------------
+Technical Support
+-------------------------------------------------------------------------------
+Web Site:        www.supermicro.com
+Headquarters:    support@supermicro.com
+European Branch: support@supermicro.nl
+Asian Branch:    support@supermicro.com.tw

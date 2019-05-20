@@ -1,0 +1,731 @@
+Supermicro Update Manager (SUM) Release Notes
+================================================
+Software Release Version: V2.1.0
+Release Date: 2018/09/03
+
+
+Introduction
+============
+The Supermicro Update Manager (SUM) can be used to manage the BIOS/BMC/CMM/PSU/
+Broadcom 3108 RAID firmware image update and configuration update for select
+systems. In addition, system checks as well as event log management are also
+supported.
+Moreover, special applications are also provided to facilitate system
+management. To update configurations, users can edit system BIOS settings, DMI
+information and BMC/RAID/CMM configurations from readable text files, as well as
+use this update manager to apply these configurations.
+
+Two channels are possible for management: the OOB (Out-Of-Band) channel, i.e.
+communication through the BMC IPMI interface, and the in-band channel, i.e.
+communication through the local system interfaces. By the OOB channel, most
+management commands (except CheckSystemUtilization) can be executed
+independently of the OS on the managed system and even before the system OS
+is installed.
+
+
+Requirements
+============
+@OOB Usage
+- Management Client (Running SUM CLI)
+    * Operating system:
+        Red Hat Linux 4 updates 3 (x86_64) or later
+        Ubuntu 12.04 LTS (x86_64) or later
+        Debian 7 (x86_64) or later
+        Windows Server 2008 (x86_64) or later
+        FreeBSD 7.1 (x86_64) or later
+- Managed System
+    * Select X9/X10/X11 systems
+- Command specific requirements
+    * TpmProvision: require to use with ISO images provided in
+        TPM_1.3_20170802.zip Check ReleaseNotes.txt in the package for usage
+    * CheckSystemUtilization: require to use with TAS (Thin Agent Service)
+        TAS_1.5.1_build.180202.zip
+@In-Band Usage
+- Managed System
+    * Operating system:
+        Red Hat Linux 4 (x86_64) updates 3 or later
+        Ubuntu 12.04 LTS (x86_64) or later
+	Debian 7 (x86_64) or later
+        Windows Server 2008 (x86_64) or later
+        FreeBSD 7.1 (x86_64) or later
+    * Hardware:
+        Select X9/X10/X11 systems
+
+
+Known Limitation
+================
+1. In-band UpdateBmc command does not support AMI BMC FW.
+2. OOB UpdateBios command does not support MBs that implemented client ME, such
+   as X11SAE-F, X11SAT-F, X11SSZ-(Q)F/LN4F, X11SRM-VF and X11SBA-(LN4)F. And it
+   does not support C7-series platform, either.
+3. X9DRL-iF/3F MB does not support OOB BIOS update and OOB/in-Band DMI
+   information related commands.
+4. For the --reboot option in OOB usage, if the target OS does not support
+   software shutdown, system will be forced to power off and on again.
+5. With the Server ME embedded on the Supermicro system, the execution of the
+   in-band command "UpdateBios" might fail when the Client ME driver (MEIx64)
+   is installed on Windows.
+6. All commands of CMM Management are for OOB use only.
+7. In-band GetBmcCfg/ChangeBmcCfg commands in Windows does not support a
+   hostname that exceeds 244 bytes.
+8. ChangeBiosCfg command will show error messages if the current BIOS
+   configuration is different from  the generated BIOS XML configuration file.
+9. BIOS XML configuration REQUIRES a text editor supporting extended ASCII
+   characters (ISO-8859-1 encoding).
+10.The SW-managed JPME2 feature to update FDT in ME region is NOT supported in
+   the following MBs: X11DDW-L/N(T) Revision 1.10, X11DPH-T-P Revision 1.00,
+   X11DPL-I-P Revision 1.01, X11DPU-X(LL) of older versions and Revision 1.01.
+   Note that the earlier revisions of those four MBs are not supported, either.
+11.The TpmProvision command does not support TPM 2.0 on Grantley.
+12.A1SRi/A1SAi MB does not support OOB BIOS update.
+13.The TpmProvision command does not support on the platforms after Purley.
+14.The UpdatePsu command only supports PSU "PWS-2K04A-1R" and "PWS-2K20A-1R".
+15.The UpdatePsu command does not support multi-OOB usage.
+16.In-Band UpdateBmc command on FreeBSD OS will be slow caused by KCS driver
+   of FreeBSD.
+17.Prevent BIOS downgrade if the ME version of current BIOS is between
+   4.1.x.xxx and 4.0.4.294.
+
+
+Version History
+===============
+V2.1.0 (2018/09/03)
+========================
+1. New Feature : Add GetPsuInfo and UpdatePsu commands to manage PSU.
+2. New Feature : Add GetTpmInfo and TpmManage commands to manage TPM.
+3. New Feature : Add SUM customized configuration.
+                 #journal_level
+                 #journal_path
+                 #confirm_timeout
+4. New Feature : Add SetBiosPassword command to set BIOS Administrator password.
+5. New Feature : Exit code 76 - Invalid TPM provision table file.
+6. New Feature : Add secure flash feature for Purley and later
+                 platforms for UpdateBios command.
+7. New Feature : Define new sensor number for GetEventLog command.
+8. New Feature : Support RAID controller update through I2C interface.
+9. New Feature : Add battery backplane(BBP) control for CMM.
+10.New Feature : Support multiple assets in one add-on card.
+11.New Feature : Add OEM FID feature for GetBiosInfo command.
+12.New Feature : Add "Advanced Event Log" table for CMM/BMC.
+13.Enhancement : Improve the correctness of error messages.
+14.Enhancement : For GetSataInfo command, show HDD information when HDD
+                 controller mode is IDE.
+15.Enhancement : Revise rebooting status message if --reboot option is assigned.
+16.Enhancement : Add LAN MAC information for CheckSystemUtilization command.
+17.Enhancement : Support HII op-codes "EFI_IFR_STRING_REF1_OP" and
+                 "EFI_IFR_MATCH_OP".
+18.Enhancement : Skip unnecessary BMC feature flags download retry for some X10
+                 BMC FWs.
+19.Enhancement : Extend number of NVMe SSD devices displayed up to 32.
+20.Enhancement : "SubNetMask", "DefaultGateWayAddr" and "VLAN" fields in LAN
+                 table of BMC configuration can be customized for in-band
+                 ChangeBmcCfg command. 
+21.Enhancement : Update openssl to 1.0.2p-dev for security concern.
+22.Enhancement : options --overwrite_cfg and --overwrite_sdr of UpdateBmc
+                 command doesn't need to be bundled. The network settings will
+                 be preserved even if option --overwrite_cfg is used.
+23.Enhancement : Prevent BIOS downgrade due to ME security issue.
+24.Enhancement : Revise help message of UpdateBios command.
+25.Enhancement : User ID will be replaced with asterisk symbols in SUM logs.
+26.Enhancement : Add power input/output electric current data for
+                 CheckSensorData command.
+27.Enhancement : Improve Client ME exception troubleshooting message for
+                 Windows.
+28.Fix         : Optimization level of compilation flag changed from 3 to 1 
+                 for FreeBSD.
+29.Fix         : Revise AD timeout range to [10:30] seconds for BMC/CMM
+                 configuration.
+30.Fix         : Failed to parse enclosure ID in event log.
+31.Fix         : In-Band BIOS update re-flashed wrong block when verification
+                 failed.
+32.Fix         : Missing power up retry. Fix for SUM 2.0.1.
+33.Fix         : Add board ID 096C(X11DPU-Z+) to list of containing FPGA in NC
+                 for in-band UpdateBios command.
+34.Fix         : Changing host name in OEM LAN configuration would not take
+                 effect.
+35.Fix         : Reload RMCP session after uploading file for OOB UpdateBios
+                 and UpdateBmc commands.
+36.Fix         : Neglect to release resource when in-band BIOS update failed.
+37.Fix 	       : Release token message in multi-node was not generated. 
+38.Fix	       : ME update status polling interval was too small. NMI kernel
+                 message will be flooding when in-band BIOS update with
+                 customized INTEL BIOS.
+39.Fix         : SUM incorrectly paired user ID and password caused changing
+                 BMC/CMM configuration failure.
+40.Fix         : System will crash after executing in-band UpdateBios command on
+                 X11SSN.
+41.Fix         : Add workaround to prevent from BMC returing wrong SDR length on
+                 B2SS2.
+42.Fix         : Prevent SUM running out of memory due to formatting error
+                 message defects.
+43.Fix         : Handle signal "SIGPIPE" to prevent SUM crashing when uploading
+                 file to BMC and not getting a response.
+44.Fix         : Settings "IPAddr", "NetMask" and "GateWay" should not be
+                 applied if setting "IPSrc" is DHCP for in-band UpdateBMC
+                 command.
+45.Fix         : Add workaround to fix license SFT-DCMS-Single checking
+                 mechanism.
+46.Fix         : False reporting update completed message while updating from
+                 signed BMC to unsigned BMC.
+47.Fix         : Incorrect default value annotation for DAT BIOS configuration.
+48.Fix         : OOB UpdateBios/UpdateBmc command would fail when uploading file
+                 to BMC.
+
+
+V2.0.1 (2018/04/20)
+========================
+1. New Feature  : Add the option --skip_bbs for the command ChangeBiosCfg.
+2. Enhancement  : Support more BMC FWs for OOB force BIOS update feature.  
+3. Enhancement  : Add BIOS downgrade prevention for Apollo Lake, Denverton,
+                  Knights Landing platforms and X11SSQ series of MBs.
+4. Enhancement  : Add "Slot Designation" field for AOC information in 
+                  CheckAssetinfo command output.
+5. Enhancement  : Add retry when RMCP open session handshake failure.
+6. Enhancement  : Skip BIOS feature flags download for X10, Blade and CMM
+                  systems.
+7. Enhancement  : License free for CMM command group.
+8. Enhancement  : Add an alternative mechanism for in-band GetDmiInfo,
+                  ChangeDmiInfo and EditDmiInfo commands.
+9. Enhancement  : Add BIOS ROM size check to prevent in-band BIOS updates
+                  between 32 and 64 MB BIOS.
+10.Enhancement  : Add UDP thread safety protection.
+11.Enhancement  : TpmProvision command failed on Purley for new BIOS with new
+                  setting name.
+12.Enhancement  : Add workaround to allow 'Disable' duplications for boot
+                  options in BBS Priorities menus for BIOS XML configuration.
+13.Enhancement  : Preserving setting to new BIOS is limited to SMCI defined
+                  preservable setting candidates.
+14.Enhancement  : Add ten seconds delay after ME reset for in-band BIOS update.
+15.Enhancement  : Show rebooting status message instead of exception when 
+                  confirm flag timeout.
+16.Enhancement  : Extend polling RAID controller update progress timeout from 20
+                  to 50 minutes.
+17.Enhancement  : Add NIC FW version for CheckAssetInfo command.
+18.Enhancement  : Some BIOS settings cannot be preserved for non-Purley platform
+                  with HII.
+19.Enhancement  : Remove 'Boot' table in CMM configuration file.
+20.Enhancement  : Adjust power status polling interval as three seconds after
+                  sending power control commands.
+21.Fix          : In-band GetBiosInfo and UpdateBios commands would cause kernel
+                  panic on X11SAA series of MBs.
+22.Fix          : BIOS event log can't be cleared by OOB ClearEventLog command.
+23.Fix          : KCS buffer size compatibility for in-band UpdateBmc command.
+24.Fix          : Add OpenSSL thread safe protection for OOB UpdateBIOS,
+                  UpdateBmc and UpdateRaidController commands in multiple system
+                  usage mode.
+25.Fix          : The value of Numeric settings in BIOS XML configuration would
+
+26.Fix          : Improve OOB BIOS update procedure stability.
+27.Fix          : Incorrect version comparison for software feature support 
+                  check.
+28.Fix          : Failed to acquire software feature support information.
+29.Fix          : In-band UpdateBios command would fail in UEFI-based OS.
+30.Fix          : Some Purley MBs would be bricked after in-band update BIOS and
+                  reboot.
+31.Fix          : Some BIOS configuration dependencies were not shown.
+32.Fix          : BIOS configuration would be changed after executing
+                  in-band GetCurrentBiosCfg command.
+33.Fix          : In-band UpdateBmc command would not complete and return to
+                  console.
+34.Fix          : Skip BIOS support check for Grantley when BMC command version
+                  is incorrect.
+35.Fix          : Failed to get SMM buffer data length in Windows.
+36.Fix          : BMC major version uses binary encoding.
+37.Fix          : In-band UpdateBios would cause system hang after ME update is
+                  finished and ME is reset.
+38.Fix          : Help message in the BIOS XML configuration was inconsistent
+                  with BIOS Setup.
+39.Fix          : BBS Priorities in BIOS XML configuration was lacking of
+                  duplication checks.
+40.Fix          : The warning message was not shown when BIOS XML configuration
+                  setting change was not taken effect.
+41.Fix          : BMC would crash during BMC update from non-Redfish to Redfish
+                  on MicroBlade and B10 series systems.
+42.Fix          : Retrieve cold reset BMC operation after BMC update is 
+                  completed.
+43.Fix          : In BIOS XML configuration, Password setting category only
+                  supports "Administrator Password" and "User Password".
+44.Fix          : UpdateBios command with --preserve_setting option would fail
+                  for some Naples BIOS. 
+45.Fix          : Inaccurate exception message for error code "119.28".
+46.Fix          : BIOS string database parsing error.
+47.Fix          : Add SMC RAKP auto detection.
+48.Fix          : Vendor/SubVendor name missing in CheckAssetInfo command output
+                  under multi-node mode.
+49.Fix          : Fix GetCmmCfg command failure.
+
+
+V2.0.0 (2017/11/08)
+========================
+1. New Feature  : Add support for INTEL Purley and AMD Naples platforms.
+2. New Feature  : CheckAssetInfo command support On-board/Add-on PCI devices.
+3. New Feature  : UpdateBios command adds BIOS setting preservation feature 
+                  for Purley platform. This feature requires "SFT-OOB-LIC" 
+		  product key.
+4. New Feature  : Added a new software product key type for SFT-DCMS-SVC-KEY.
+5. New Feature  : Exit code 155 - IPMI received invalid data.
+6. Enhancement  : Change command name from GetCurrentBiosCfgTextFile to
+                  GetCurrentBiosCfg and GetDefaultBiosCfgTextFile to
+                  GetDefaultBiosCfg.
+7. Enhancement  : BIOS configuration file of GetCurrentBiosCfg/ChangeBiosCfg/
+                  GetDefaultBiosCfg adopts XML format for Purley/Naples 
+		  platforms.
+8. Enhancement  : Apply SMBIOS 3.1.1 field into Type 4/17/9.
+9. Enhancement  : TpmProvision command will be terminated if TXT function is not
+                  supported by CPU.
+10.Enhancement  : Remove --force_clearlock option and require --lock yes option
+                  for TpmProvision command.
+11.Enhancement  : Print IPMI completion code description in IPMI exception 
+                  output.
+12.Enhancement  : Add BIOS update status check when polling BIOS update 
+                  progress.
+13.Enhancement  : Print BIOS update status code and description in exception
+                  When the BIOS update fails.
+14.Enhancement  : Increase polling interval for BIOS update progress from two
+                  to five seconds.
+15.Enhancement  : Add BIOS update status code check before updating phase.
+16.Enhancement  : Add fields 'Controller name', 'Model', 'Disk size', 
+                  'Cylinders', 'Sectors', 'Tracks', 'Heads', 'Interface type'
+                  and 'Slot Number' in HDD category for CheckSystemUtilization 
+		  command.
+17.Enhancement  : Rename product key from 'DCMS' to 'SFT-DCMS-Single'.
+18.Enhancement  : Enhance RAID configuration file comments.
+19.Enhancement  : Add time update mode from blade system for CMM.
+20.Enhancement  : Add retry and timeout for IPMI OEM time-consuming commands.
+21.Enhancement  : If patch #3033929 is not installed on Windows 2008, executing
+                  in-band GetBiosInfo command will fail.
+22.Enhancement  : Replace IPMI OEM commands with standard commands for BMC/CMM 
+                  network configurations.				  
+23.Fix          : Fix SMI exception message can't display correctly in Windows.
+24.Fix          : OOB UpdateBios command backward compatible with BIOS of
+                  feature flags version 1.2 and before.
+25.Fix          : Add Mutex protection when accessing KCS bus in Windows.
+26.Fix          : Fix unable to resolve IPv6 hostname.
+27.Fix          : Support space character in password in system list file.
+28.Fix          : Fix in-band GetDmiInfo command failure after in-band 
+                  GetBiosInfo command.
+29.Fix          : OOB UpdateBIOS command will check LOCK_FW_UPLOAD flag for all
+                  platforms in uploading phase.
+30.Fix          : Fix uploading token occupied issue in UpdateBios command. 
+31.Fix          : OOB commands might connect to a wrong IPv4 address.
+32.Fix          : Free invalid memory type warning in dumped kernel dmesg.
+33.Fix          : In-band GetBiosInfo command failure.
+34.Fix          : OOB UpdateBios progress might get stock.
+35.Fix          : When SNMP is changed from disabled to enabled, the SNMPV2 and
+                  SNMPV3 related settings could not be taken effect.
+36.Fix          : Fix inband GetBiosInfo command causing inband GetDmiInfo 
+                  command failure issue.
+
+
+V1.7.0 (2017/07/21)
+========================
+1. New Feature  : Added UpdateRaidContolller, GetRaidCfg, ChangeRaidCfg and
+                  GetRaidControllerInfo commands to manage Broadcom 3108
+                  RAID firmware.
+2. New Feature  : Added GetSataInfo command to get SATA HDD information.
+3. New Feature  : Added GetNvmeInfo command to get NVMe SSD device information.
+4. New Feature  : IPv6 support for SUM OOB functions.
+5. New Feature  : CheckSystemUtilization command supports new HDD types: RSTe,
+                  NVMe and LSI.
+6. New Feature  : Support Denverton platform.
+7. New Feature  : Added a new software product key type for DCMS-CALL-HOME.
+8. New Feature  : Added a new command SetBiosAction to enable BBS priorities in
+                  BIOS configuration files for legacy hard disk and network
+		  drives.
+9.  Enhancement : The --image_url option of TpmProvision command needs share
+                  point path of provision image package instead of file path.
+10. Enhancement : Show help message when command option check exceptions occur.
+11. Enhancement : Feature flag dominates OOB UpdateBios command options.
+12. Enhancement : Added checking CMOS value mechanism for in-band update BIOS
+                  command.
+13. Enhancement : Change SDR temperature items display rule.
+14. Enhancement : Change the mechanism of Windows service control in SUM and
+                  Windows drivers for WinPE support: uses Windows APIs to
+		  control Windows services instead.
+15. Enhancement : Replace Windows driver from SUPERBMC with phymem and add the
+                  protection mechanism to prevent other services from accessing
+                  BMC at the same time for inband UpdateBmc command.
+16. Enhancement : Revise the message of restarting system after executing
+                  in-band UpdateBios command.
+17. Enhancement : Display "Serial number" field in "HDD" section in
+                  CheckSystemUtilization command output.
+18. Enhancement : Display "Current Speed" field in "Network Interface" sections
+                  in CheckAssetInfo command output.
+19. Enhancement : Changed log file path rule: if the folder
+                  /var/log/supermicro/SUM exists, the logs will be stored there.
+		  Otherwise, they are stored in the same folder as $PWD.
+20. Enhancement : Assign default file name for error log when executing
+                  GetBmcCfg/GetCmmCfg/GetRaidCfg commands without --file option.
+21. Enhancement : Revise the help message for the GetSataInfo command.
+22. Fix         : Fix BIOS ID can not found in rom file issue.
+23. Fix         : Fix in-band updating BIOS from old BIOS which doesn't support
+                  SMI command 0xE7 on FreeBSD.
+24. Fix         : Terminal width might cause SUM to terminate when showing SUM
+                  help message.
+25. Fix         : CheckAssetInfo command fails to get AOC slot information via
+                  IPMI raw command.
+26. Fix         : Fix getting fan mode flag issue when executing GetCmmCfg
+                  command.
+27. Fix         : Reorder the network-related tables in BMC/CMM configuration
+                  files.
+28. Fix         : Fix Checking type 7 length error for full SMBIOS file.
+29. Fix         : Fixing the software product key expired date for later than
+                  year 2038 would show error message issue.
+30. Fix         : Fix 'PW Consumption' reading unit incorrect issue.
+
+
+V1.6.2 (2016/01/26)
+========================
+1. Added: New command group CMM Management to do CMM firmware updating and
+          configuration getting/updating.
+2. Added: SNMP function setting for BMC/CMM configuration.
+3. Added: Support FQDN format for Radius/LDAP server address and AD Domain
+          Controller Server Address/Alert SNMP Address setting for CMM/BMC
+          configuration.
+4. Added: --no_banner option can suppress output banner message
+5. Added: --no_progress option can suppress output progress message
+6. Added: GetDefaultBiosCfg command is alias of GetDefaultBiosCfgTextFile
+7. Added: GetCurrentBiosCfg command is alias of GetCurrentBiosCfgTextFile
+8. Changed: --file option changed from required to optional for commands
+            "GetDefaultBiosCfg, GetCurrentBiosCfg, GetDmiInfo, GetBmcCfg,
+             GetCmmCfg". If --file option is not used, will show file content
+            to stdout directly.
+9. Changed: Remove --manual_reboot option and show warning message if BIOS
+            FDT is different or need to disable ME protection when run in-band
+            update BIOS.
+10. Fixed: During OOB updating BIOS, SUM can not terminate update procedure if
+           ME is not in recovery mode.
+11. Fixed: SUM OOB updating BIOS session would be terminated by another SUM
+           request session.
+12. Fixed: Administrator privilege checking issue on WINDOWS system.
+13. Added: Support FQDN format for AD/Radius/LDAP server address setting for
+           CMM/BMC configuration.
+14. Added: Show contents of CMM configuration file on screen when running
+           GetCmmCfg command without --file option.
+15. Fixed: Fail to retry in GetEventLog command.
+16. Fixed: QueryProductKey command issue that can not work for PURLEY or
+           later platform.
+17. Fixed: Revise output message format of GetCmmInfo command.
+18. Fixed: Revise command option support of updateBMC/updateCMM command.
+19. Added: Show error message when ISO file name exceed 255 characters.
+20. Fixed: GetEventLog command segmentation fault when having no privilege to
+           overwrite file.
+21. Fixed: GetBmcCfg command shows success but doesn't overwrite file when
+           having no write privilege.
+22. Added: Rejection mechanism of downgrade BIOS to SKYLAKE from KABYLAKE.
+23. Changed: Replaced SUPERBMC driver by windows WMI libraries.
+24. Fixed: Fix SNMP service status issue, SNMP service will enable when changing
+           SNMP related configuration.
+25. Fixed: Fix E-mail address to support both "-" and "+" characters before "@"
+           character.
+26. Added: Support alias field name function for BMC configuration file.
+           The following is the field name that changed after SUM 1.6.2,
+           "SNMPIPAddr" changed to "SNMPAddr",
+           "ServerIP" changed to "ServerAddr",
+           "PrimaryServerIP" changed to "DomainControllerServerAddress1",
+           "SecondaryServerIP changed to "DomainControllerServerAddress2",
+           "ThirdServerIP changed to "DomainControllerServerAddress3",
+           "IPAddr" changed to "ServerAddress".
+27. Fixed: Improvement getEventLog command performance from 8 seconds to
+           2 seconds.
+28. Fixed: InBand UpdateBios command does not clear BIOS configuration when
+           --preserve_mer option is used.
+29. Fixed: Add retry mechanism to, resend IPMI command to BMC when get wrong
+           compeletion code from BMC.
+30. Fixed: Fail to retry in GetEventLog command.
+
+
+V1.6.1 (2016/08/30)
+========================
+1. Added: In-band commands requires SHA-2 Code Signing Support for Windows 7
+          and Windows Server 2008 R2, or SUM will throw exception message.
+2. Added: Added SOP recommendation for OOB UpdateBios command: before performing
+          the OOB UpdateBios command, it is recommended to shutdown the managed
+          system first.
+3. Added: Get/ChangeBmcCfg command added HostName field for LAN table
+4. Added: Get/ChangeBmcCfg command for LAN/IPAddr field supports multiple system
+          usage mode when only one single system is managed.
+5. Fixed: Get wrong value from CMOS 0x50 when run in-band update BIOS command.
+6. Fixed: In-band UpdateBios command does not throw exception when JPME2 jumper
+          is not jumped.
+7. Fixed: Improved in-band UpdateBmc robustness.
+8. Fixed: Allow BMC username/password begins with '-' or '/'.
+9. Fixed: Allow BMC username/password containing '+' when doing OOB UpdateBmc
+          or OOB UpdateBios.
+10. Fixed: OOB UpdateBmc/UpdateBios thread safty.
+11. Fixed: OOB UpdateBmc/UpdateBios WEB connection check added retries.
+12. Fixed: OOB UpdateBmc/UpdateBios service checking will not throw unexpected
+           exception.
+13. Fixed: CheckAssetInfo command shows too many System Network Interface.
+14. Fixed: TpmProvision would fail if "Security Device Support" has been
+           disabled before provision.
+15. Fixed: ActivateProductKey command failed for node product keys with
+           expiration date.
+16. Fixed: In-band UpdateBios command cannot proceed for some Client ME
+           platform, such as C7Z270-CG.
+17. Fixed: in-band command sometimes encountered process locking false alarm in
+           Linux.
+18. Fixed: ChangeBmcCfg command could cause FRU multi-record data lost.
+19. Fixed: ChangeBmcCfg command could create FRU Chassis data unncessarily.
+20. Improvement: In-band UpdateBios read/check BIOS board ID procedure.
+21. Improvement: In-band UpdateBios procedure speed.
+
+
+V1.6.0 (2016/01/28)
+========================
+1. Changed: Removed JAVA dependency. No JAVA installation is required.
+2. Changed: OOB UpdateBios/UpdateBmc uses HTTP/HTTPS protocol.
+3. Changed: Get/Edit/ChangeDmiInfo command detects and provides only BIOS
+            supported items.
+4. Changed: CheckSystemUtilization command requirement in release note added
+             required TAS (Thin Agent Service):  TAS_1.0.1_20150605.zip
+             SUM package is no longer released with TAS package inside.
+5. Changed: Linux driver update. Push everything except memory management into
+            user space. Old driver should still work.
+6. Changed: InBand --reboot command option will delay 5 seconds to reboot OS
+            after command execution is finished.
+7. Changed: Add KCS driver retry(15 times) to prevent receiving response
+             failed, when updating BMC.
+8. Added: Support OS for RHEL4u3 and BSD 7.1 or later
+9. Added: Support X11 Platform.
+10. Added: TpmProvision command for X11 Client TPM requires DOS ISO images
+          provided in TPM_20151217.zip file.
+11. Added: In-Band UpdateBios command supports MEDisabling feature.
+12. Added: All commands added feature support check.
+13. Added: All licensed commands added Feature Toggled On checking.
+14. Added: Support auto-activation from credential files.
+15. Added: CheckOOBSupport added "Feature Toggled On" checking.
+16. Added: MountIsoImage command supports HTTP image server.
+17. Added: Get/ChangeBmcCfg command added VM Parameter configuration table.
+18. Added: CheckAssetInfo command added "System Network Interface" and "IPMI
+          Network Interface" fields.
+19. Added: UpdateBmc command added --overwrite_cfg and --overwrite_sdr option.
+20. Added: Get/Edit/ChangeDmiInfo commands added support for Chassis Location
+          item in Base Board item type category if BIOS can support it.
+21. Added: Detection of client ME platform and claim not supported for OOB BIOS
+           Update.
+22. Added: Support network add-on card slot type and slot number from VPD
+           ReadOnly region.
+23. Added: add in-band UpdateBMC updating timeout to be 600 seconds.
+24. Fixed: in-band command sometimes encountered process locking false alarm in
+           Linux.
+25. Fixed: in-band UpdateBios command did not work for X9 platform.
+26. Fixed: CheckAssetInfo command for memory size was reported as 0 when memory
+           size is larger than 32GB - 1MB.
+27. Fixed: [Windows] In-band ActivateProductKey for SFT-DCMS-LIC/SFT-SUM-LIC
+           would fail.
+28. Fixed: In-Band update BIOS for jumperless procedure will show full
+           log file name on screen output for better user experience.
+29. Fixed: Check/Get configuration/data allow multiple access to the same BMC
+            by adding command level retry.
+30. Fixed: CheckAssetInfo command show information or N/A (failed reason) for
+            add-on card when getting VPD data with partial error.
+31. Fixed: Windows driver fixed sometimes cause system stocked at blue screen
+            when run in-band command on Windows OS.
+32. Fixed: For server platform, in-band UpdateBios will conflict with MEIx64
+            service, add message for required manual actions.
+33. Fixed: Memory leak occur when parse invalid VPD data format.
+34. Fixed: Search ATENs_FW instead of ATEN in BMC FW binary file for build
+           date.
+35. Fixed: In-band update BIOS is too slow issue.
+36. Fixed: in-band UpdateBMC will not be interrupted by I/O event accidentally.
+
+V1.5.0 (2015/06/26)
+========================
+1. Added: Support in-band usage for commands: CheckOOBSupport, GetBmcInfo,
+          UpdateBmc, GetBmcCfg, ChangeBmcCfg, GetEventLog, ClearEventLog.
+          In-band UpdateBmc command only supports X9/X10 ATEN BMC FW.
+2. Added: ActivateProductKey command supports new key format: 344 bytes ASCII
+          string
+3. Added: QueryProductKey and ClearProductKey commands for Key Management
+          Know keys: OOB, SSM, SD5, SUM, SCM, SPM, DCMS, DCMS-SITE
+4. Added: EditDmiInfo command
+5. Added: Support In-band UpdateBios for BroadWell CPU on Grantley platform
+          and D1500 CPU on GranteVille platform
+6. Added: GetBmcCfg/ChangeBmcCfg commands added support for Chassis FRU
+          information update
+7. Changed: Removed JAVA environment requirement for all commands except OOB
+            UpdateBios and UpdateBmc commands.
+8. Changed: OOB command execution speeds are faster by removing JAVA
+            requirement for all commands except OOB UpdateBios and UpdateBmc
+            commands.
+9.  Fixed: GetBmcCfg/ChangeBmcCfg commands removed 32 byte length limitation
+           for FRU individual fields. Limitation is hit only when total data
+           to write exceeds FRU storage size.
+
+
+V1.4.1 (2015/06/16)
+========================
+1. Added: Support OS Windows Server 2008 (x86_64) or later
+2. Added: Support In-band UpdateBios for X10QBL
+3. Added: Support SFT-SUM and SFT-DCMS-Single product key
+4. Added: GetBmcInfo/UpdateBmc commands support B9_AMI_Hermon FW
+5. Added: GetBmcCfg/ChangeBmcCfg command added more Boot device type when BIOS
+          support it.
+6. Added: GetBmcCfg/ChangeBmcCfg command added PUE3 and SmartCooling FanMode
+7. Added: CheckAssetInfo command added version field for CPU
+8. Added: CheckSystemUtilization command added architecture name in OS version
+          field
+9. Added: Command usage could be hardware or firmware platform dependent. User
+          Guide added Appendix C Platform Feature Support Matrix as reference
+10. Added: Exit code 11 - Invalid command line data
+11. Added: UserGuide added Appendix D Third-Party Software
+12. Added: GetBmcCfg, GetDefaultBiosCfgTextFile, GetCurrentBiosCfgTextFile, and
+           GetDmiInfo commands output files added message to reference usage
+           sections in SUM User's Guide.
+13. Changed: TAS package updated to 1.0.1 20150605
+14. Changed: Change wording from "Product Key" to "Node Product Key"
+15. Changed: GetBmcCfg/ChangeBmcCfg command changed XML configuration table
+    	     name from "NTP" to "DateTime", "NTPEnabling" to "TimeUpdateMode".
+    	     TimeUpdateMode support "Local/NTP/CMM". Added DateTimeValue
+             information
+16. Changed: GetBmcCfg/ChangeBmcCfg command modified XML configuration comments
+             for /BmcCfg/OemCfg/IPControl table, and set the rule number
+             to 0 if the table is empty. Also, SUM will skip this special rule
+             number.
+17. Changed: CheckAssetInfo command output message for Slot Number renamed as
+             Slot Location
+18. Changed: CheckAssetInfo command changed wording from "Network Interface" to
+            "Add-on Network Interface"
+19. Changed: TpmProvision command requirement in release note added
+             required ISO:  TPM_20140925.iso or TPM_Lock_20140925.iso
+20. Changed: TpmProvision command with --cleartpm option requires mounting
+             TPM ISO images
+21. Changed: TpmProvision command has less execution steps
+22. Fixed: GetDefaultBiosCfgTextFile and LoadDefaultBiosCfg command does not
+           reflect BCP revised default BIOS configuration settings. Check BIOS
+           release note for BIOS support.
+23. Fixed: TpmProvsion command failed in some MB
+24. Fixed: TpmProvsion command did not detect locked status
+25. Fixed: CheckAssetInfo command does not get current memory speed
+26. Fixed: CheckAssetInfo command show Slot Type/Slot Location as N/A for
+           on card NICs
+27. Fixed: UpdateBios command in-band usage sometimes hang in RHEL 7.0
+28. Fixed: JRE version detection failed in some environment
+29. Fixed: CheckSystemUtilization command does not get correct OS version for
+           SLES 11 SP3, RHEL 7, and RHEL7.1
+30. Fixed: CheckSystemUtilization command does not get memory information for
+           RHEL7.1
+31. Fixed: CheckSystemUtilization command does not get correct HDD information
+           when HDD name is longer than 100 character.
+32. Fixed: If windows driver doesn't support SMI, would stop TAS / SD5, then
+           restart
+33. Fixed: Some BIOS configuration cannot be updated because SUM does not parse
+           BIOS files correctly.
+34. Fixed: GetBmcCfg com 4mand does not reflect supported lan modes in
+           /OEM/Lan/LanMode when SKU does not have dedicated BMC LAN
+35. Fixed: SUM does not execute when using absolute path which consists of
+           space characters
+36. Fixed: GetEventLog command does not parse events with sensor type C6~C8
+           correctly
+37. Fixed: Check product key activation status whould be slow for some FW
+38. Fixed: GetBmcCfg command can support 32 characters for /BmcCfg/StdCfg/Fru/
+           string items
+39. Fixed: Sometimes -l option will fail when GetDmiInfo without using
+           --overwrite option
+40. Fixed: OOB UpdateBios command does not work for X9DRTH5.116 BIOS
+41. Fixed: TpmProvision command does not work for non-TXT supported BIOS
+
+V1.4.0 (2014/08/05)
+========================
+1. Added OOB Application commands:
+      TpmProvision, MountIsoImage, UnmountIsoImage
+2. Added in-band BIOS update support for X10 Grantley platform
+3. Added BMC configurations for /BmcCfg/OemCfg/SMTP, NTP, DDNS, ALERT, AD,
+   LDAP, RADIUS, IPAccessControl, Certification, WebSession, UIControl
+4. Added BMC configurations for /BmcCfg/OemCfg/LAN/DNSAddr
+5. Added support: GetBmcInfo/UpdateBmc commands support MicroBlade/SuperBlade
+   (B10) BMC firmware
+6. CheckAssetInfo Memory "Manufacturing Date" wording to be
+   "Manufacturing Date (YY/WW)"
+7. CheckAssetInfo units format changed: 'MHZ' => ' MHz'; 'MB' => ' MB'
+8. CheckSystemUtilization will have HDD, NIC number starts from 1 instead of 0
+9. Added boot device support for Legacy and UEFI USB devices in
+   /BmcCfg/StdCfg/Boot BMC configuration
+10. Added TAS intallation guide
+11. Fixed: Multiple system command is not stable
+12. Fixed: TAS HDD usage information is not accurate
+13. Fixed: TAS OS information is not accurate
+14. Fixed: TAS cannot be used together with SD5/ipmicfg
+15. Fixed: BMC configuration for ServiceEnabling/IKVM cannot be disabled
+
+
+V1.3.0 (2014/06/09)
+========================
+1. Added OOB BMC management commands:
+      GetBmcInfo, UpdateBmc, GetBmcCfg, ChangeBmcCfg
+2. Added OOB System check commands:
+      CheckAssetInfo, CheckSystemUtilization, CheckSensorData
+3. Added OOB Event Log management commands:
+      GetEventLog, ClearEventLog
+4. Added: ActivateProductKey command support in-band usage.
+5. Changed: Prodcut key is not required for GetBiosInfo command
+6. Fixed: Will check if host name is repeated in system list file
+7. Fixed: Will check DEVICE_BUFFER_SIZE when getting in-band file from BIOS.
+8. Fixed: Will check if BIOS default value is illegal.
+9. Fixed: Concurrent OOB usage will segmentation fault when managing more than
+          20 systems
+
+
+
+V1.2.0 (2014/1/15)
+========================
+
+1. Add GetDmiInfo and ChangeDmiInfo commands to support DMI editing
+2. Add -l option for managing multiple systems through OOB channel
+3. In-band UpdateBios command supports X10 systems
+4. Eliminate --me_type option for In-Band UpdateBios command
+5. For all In-Band commands except "UpdateBios," only systems that have
+   OOB-supported BMC firmware can run SUM.
+6. For all In-Band commands except "UpdateBios," product key activation is
+   required.
+7. Fix: ChangeBiosCfg command will reset to default for current settings
+        that is in the BIOS setup menu but not exposed in the BIOS setup text
+        file
+8. Fix: Incorrect exit code when using invalid firmware image to UpdateBios
+        command. Original: 82. Fixed: 62
+9. Fix: MB Type name typo when running OOB UpdateBios for X9DRW-7TPF MB.
+        Original: X9DRAW-7TPF. Fixed: X9DRW-7TPF.
+10. Fix: Incorrect error message, when a directory name is assigned to the
+         --file option.
+11. Fix: When no default value is given from BIOS, BIOS Configuration related
+         commands will not work correctly.
+
+
+V1.1.0 (2013/09/12)
+========================
+
+1. Add new feature: In-Band usage.
+2. Change "LoadFactoryDefault" command to "LoadDefaultBiosCfg"
+
+
+V1.0.2 (2013/08/15)
+========================
+
+1. Fix "Board ID mismatch during OOB BIOS flash" issue for MB X9SRL
+
+
+V1.0.1 (2013/07/30)
+========================
+
+1. Fix "Cannot disable multiple Boot Device" issue for [Boot] menu in BIOS
+   configuration text file
+2. Fix "Board ID mismatch during OOB BIOS flash" issue for MB X9DRL-iF
+
+
+V1.0.0 (2013/07/02)
+========================
+
+Initial release of SUM
+
+
+
+
+
+Technical Support
+=================
+Web Site:        www.supermicro.com
+Headquarters:    support@supermicro.com
+European Branch: support@supermicro.nl
+Asian Branch:    support@supermicro.com.tw
+
